@@ -82,14 +82,7 @@ def is_user_member(user_id):
         print(f'خطا در بررسی عضویت: {e}')
         return False
 
-@bot.message_handler(commands=['debug'])
-def debug_member_status(message):
-    user_id = message.from_user.id
-    try:
-        member = bot.get_chat_member(chat_id=f"@{CHANNEL_USERNAME}", user_id=user_id)
-        bot.send_message(message.chat.id, f"وضعیت شما در کانال: {member.status}")
-    except Exception as e:
-        bot.send_message(message.chat.id, f"خطا: {e}")
+
 
 
 
