@@ -90,23 +90,18 @@ def send_feature_list(message):
             reply_markup=markup
         )
 
-# وب‌هوک فقط POST می‌پذیرد
+
+# Webhook endpoint
 @app.route('/' + TOKEN, methods=['POST'])
 def webhook():
     json_str = request.get_data().decode('UTF-8')
     update = telebot.types.Update.de_json(json_str)
     bot.process_new_updates([update])
     return '', 200
-
-# این برای GET هست، وقتی تو مرورگر آدرس ربات رو باز می‌کنی، خطا نده
-@app.route('/', methods=['GET'])
+# وب‌هوک فقط POST می‌پذیرد
+@app.route('/')
 def index():
     return 'ربات فعال است'
-
-# اگر خواستی با GET به مسیر وبهوک هم جواب بدی (اختیاری)
-@app.route('/' + TOKEN, methods=['GET'])
-def webhook_get():
-    return 'Webhook is live'
 
 
 
@@ -614,9 +609,10 @@ def option_messages(message):
         Bot_Response = f'جان @{message.from_user.username} مه ره کار داشتی؟\n\n🔸 برای گپ بزوعن با ربات کلمه <b>(شروع)</b>  ره راهی هاکان\n\n🔺و برای اطلاع داشتن از تاریخ و ساعت امروز کلمه<b> (زمان) </b>ره راهی هاکان'
         bot.send_message(message.chat.id, text=Bot_Response, parse_mode= 'HTML') 
         
-
+# تنظیم webhook
 if __name__ == '__main__':
     bot.remove_webhook()
-    bot.set_webhook(url='https://bottelegram31.onrender.com/' + TOKEN)  # آدرس رندر یا دامنه شما
+    bot.set_webhook(url='https://bottelegram31.onrender.com/' + TOKEN)
+
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
