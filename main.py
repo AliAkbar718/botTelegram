@@ -17,12 +17,14 @@ TOKEN = "7579645804:AAE6q9t-k3-HKBb0iGkJQmOkX9O4aH_CHaM"
 bot = telebot.TeleBot(TOKEN)
 app = Flask(__name__)
 
-CHANNEL_USERNAME = "rap_family1"  
+CHANNEL_USERNAME = "rap_family1"
 
 def is_user_member(user_id):
     try:
-        member = bot.get_chat_member(chat_id=f"@{CHANNEL_USERNAME}", user_id=user_id)
-        return member.status in ['member', 'administrator', 'creator']
+        result = bot.get_chat_member(chat_id=f"@{CHANNEL_USERNAME}", user_id=user_id)
+        status = result.status
+        print(f"وضعیت کاربر: {status}")
+        return status in ['member', 'administrator', 'creator']
     except Exception as e:
         print(f"خطا در بررسی عضویت: {e}")
         return False
@@ -43,7 +45,11 @@ def send_welcome(message):
         )
     else:
         markup = InlineKeyboardMarkup()
-        markup.add(InlineKeyboardButton("عضویت در کانال", url=f"https://t.me/{CHANNEL_USERNAME}"))
+        join_btn = InlineKeyboardButton(
+            text="عضویت در کانال",
+            url=f"https://t.me/{CHANNEL_USERNAME}"
+        )
+        markup.add(join_btn)
         bot.send_message(
             message.chat.id,
             '❌ شما در کانال عضو نیستید.\n\n'
@@ -53,28 +59,38 @@ def send_welcome(message):
         )
 
 @bot.message_handler(func=lambda message: message.text.strip().lower() == 'لیست')
-def send_features(message):
+def send_feature_list(message):
     user_id = message.from_user.id
     if is_user_member(user_id):
         features = [
-            'ارتباط با ما',
-            'مدیریت گروه',
-            'بیوگرافی',
-            'جوک',
-            'اصطلاحات انگلیسی',
+            'ارتباط با ما📞',
+            'مدیریت گروه🤵‍♂️',
+            'بیوگرافی🗨️',
+            'اصطلاحات انگلیسی🔠',
+            'جوک😄',
+            'زبان هخامنشی𐎠',
+            'فونت اسم♍',
+            'جرعت حقیقت❔',
+            'دانستنی⁉️'
         ]
-        msg = "\n".join(f"- {f}" for f in features)
-        bot.send_message(message.chat.id, "لیست قابلیت‌های ربات:\n\n" + msg)
+        features_text = "لیست قابلیت‌های ربات:\n\n" + "\n".join(f"- {f}" for f in features)
+        bot.send_message(message.chat.id, features_text)
     else:
         markup = InlineKeyboardMarkup()
-        markup.add(InlineKeyboardButton("عضویت در کانال", url=f"https://t.me/{CHANNEL_USERNAME}"))
+        join_btn = InlineKeyboardButton(
+            text="عضویت در کانال",
+            url=f"https://t.me/{CHANNEL_USERNAME}"
+        )
+        markup.add(join_btn)
         bot.send_message(
             message.chat.id,
-            '❌ لطفاً ابتدا در کانال عضو شوید و سپس «لیست» را ارسال کنید.',
+            '❌ برای استفاده از ربات، ابتدا باید عضو کانال شوید.\n\n'
+            'بعد از عضویت، کلمه «لیست» را ارسال کنید.',
             parse_mode="HTML",
             reply_markup=markup
         )
 
+# وب‌هوک فقط POST می‌پذیرد
 @app.route('/' + TOKEN, methods=['POST'])
 def webhook():
     json_str = request.get_data().decode('UTF-8')
@@ -82,9 +98,16 @@ def webhook():
     bot.process_new_updates([update])
     return '', 200
 
-@app.route('/')
+# این برای GET هست، وقتی تو مرورگر آدرس ربات رو باز می‌کنی، خطا نده
+@app.route('/', methods=['GET'])
 def index():
     return 'ربات فعال است'
+
+# اگر خواستی با GET به مسیر وبهوک هم جواب بدی (اختیاری)
+@app.route('/' + TOKEN, methods=['GET'])
+def webhook_get():
+    return 'Webhook is live'
+
 
 
     
@@ -592,8 +615,8 @@ def option_messages(message):
         bot.send_message(message.chat.id, text=Bot_Response, parse_mode= 'HTML') 
         
 
-if __name__ == "__main__":
-     bot.remove_webhook()
-     bot.set_webhook(url="https://bottelegram31.onrender.com/" + TOKEN)
-     port = int(os.environ.get("PORT", 5000))
-     app.run(host="0.0.0.0", port=port)
+if __name__ == '__main__':
+    bot.remove_webhook()
+    bot.set_webhook(url='https://bottelegram31.onrender.com/' + TOKEN)  # آدرس رندر یا دامنه شما
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
