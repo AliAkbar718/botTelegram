@@ -601,5 +601,5 @@ def option_messages(message):
 
 if __name__ == 'main':
     bot.remove_webhook()
-    bot.set_webhook(url='https://YOUR_RENDER_URL/' + TOKEN)
+    bot.set_webhook(url='https://bottelegram-2-zmmo.onrender.com/' + TOKEN)
     app.run(host='0.0.0.0', port=5000)
