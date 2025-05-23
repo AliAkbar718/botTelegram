@@ -28,8 +28,6 @@ def webhook():
 def index():
     return 'ربات فعال است'
 
-
-
 CHANNEL_USERNAME = "rap_family1"  
 
 @bot.message_handler(commands=['start'])
@@ -92,6 +90,8 @@ def debug_member_status(message):
         bot.send_message(message.chat.id, f"وضعیت شما در کانال: {member.status}")
     except Exception as e:
         bot.send_message(message.chat.id, f"خطا: {e}")
+
+
 
 
     
