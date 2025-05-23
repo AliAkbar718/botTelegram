@@ -15,21 +15,18 @@ import pytz
 
 TOKEN = "7579645804:AAF-Cy5brD6ZJabsLJ4JFlvt-Q5FPssM-yE"
 bot = telebot.TeleBot(TOKEN)
-CHANNEL_USERNAME = "rap_family1" 
-app = Flask(__name__) 
+app = Flask(__name__)
 
-# بررسی عضویت
+CHANNEL_USERNAME = "rap_family1"  
+
 def is_user_member(user_id):
     try:
-        result = bot.get_chat_member(chat_id=f"@{CHANNEL_USERNAME}", user_id=user_id)
-        status = result.status
-        print(f"وضعیت کاربر: {status}")  # برای لاگ
-        return status in ['member', 'administrator', 'creator']
+        member = bot.get_chat_member(chat_id=f"@{CHANNEL_USERNAME}", user_id=user_id)
+        return member.status in ['member', 'administrator', 'creator']
     except Exception as e:
         print(f"خطا در بررسی عضویت: {e}")
         return False
 
-# هندل استارت
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
     user_id = message.from_user.id
@@ -46,11 +43,7 @@ def send_welcome(message):
         )
     else:
         markup = InlineKeyboardMarkup()
-        join_btn = InlineKeyboardButton(
-            text="عضویت در کانال",
-            url=f"https://t.me/{CHANNEL_USERNAME}"
-        )
-        markup.add(join_btn)
+        markup.add(InlineKeyboardButton("عضویت در کانال", url=f"https://t.me/{CHANNEL_USERNAME}"))
         bot.send_message(
             message.chat.id,
             '❌ شما در کانال عضو نیستید.\n\n'
@@ -59,39 +52,41 @@ def send_welcome(message):
             reply_markup=markup
         )
 
-# لیست قابلیت‌ها
 @bot.message_handler(func=lambda message: message.text.strip().lower() == 'لیست')
-def send_feature_list(message):
+def send_features(message):
     user_id = message.from_user.id
     if is_user_member(user_id):
         features = [
-            'ارتباط با ما📞',
-            'مدیریت گروه🤵‍♂️',
-            'بیوگرافی🗨️',
-            'اصطلاحات انگلیسی🔠',
-            'جوک😄',
-            'زبان هخامنشی𐎠',
-            'فونت اسم♍',
-            'جرعت حقیقت❔',
-            'دانستنی⁉️'
+            'ارتباط با ما',
+            'مدیریت گروه',
+            'بیوگرافی',
+            'جوک',
+            'اصطلاحات انگلیسی',
         ]
-        features_text = "لیست قابلیت‌های ربات:\n\n" + "\n".join(f"- {f}" for f in features)
-        bot.send_message(message.chat.id, features_text)
+        msg = "\n".join(f"- {f}" for f in features)
+        bot.send_message(message.chat.id, "لیست قابلیت‌های ربات:\n\n" + msg)
     else:
         markup = InlineKeyboardMarkup()
-        join_btn = InlineKeyboardButton(
-            text="عضویت در کانال",
-            url=f"https://t.me/{CHANNEL_USERNAME}"
-        )
-        markup.add(join_btn)
+        markup.add(InlineKeyboardButton("عضویت در کانال", url=f"https://t.me/{CHANNEL_USERNAME}"))
         bot.send_message(
             message.chat.id,
-            '❌ برای استفاده از ربات، ابتدا باید عضو کانال شوید.\n\n'
-            'بعد از عضویت، کلمه «لیست» را ارسال کنید.',
+            '❌ لطفاً ابتدا در کانال عضو شوید و سپس «لیست» را ارسال کنید.',
             parse_mode="HTML",
             reply_markup=markup
         )
 
+@app.route(f"/{TOKEN}", methods=["POST"])
+def webhook():
+    update = telebot.types.Update.de_json(request.data.decode("utf-8"))
+    bot.process_new_updates([update])
+    return '', 200
+
+@app.route("/")
+def index():
+    return "ربات فعال است"
+
+# تنظیم وب‌هوک فقط یک‌بار دستی انجام بده یا با curl:
+# https://api.telegram.org/bot<توکن>/setWebhook?url=https://your-app.onrender.com/<توکن>
 
 
     
@@ -609,10 +604,4 @@ def webhook():
 @app.route('/')
 def index():
     return "ربات فعال است", 200
-
-if __name__ == '__main__':
-    bot.remove_webhook()
-    bot.set_webhook(url='https://bottelegram-2-zmmo.onrender.com/' + TOKEN)
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
 
