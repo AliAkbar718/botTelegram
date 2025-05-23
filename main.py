@@ -93,17 +93,6 @@ def send_feature_list(message):
             reply_markup=markup
         )
 
-# وب‌هوک برای Render
-@app.route('/' + TOKEN, methods=['POST'])
-def webhook():
-    json_str = request.get_data().decode('UTF-8')
-    update = telebot.types.Update.de_json(json_str)
-    bot.process_new_updates([update])
-    return '', 200
-
-@app.route('/')
-def index():
-    return 'ربات فعال است'
 
 
     
@@ -611,9 +600,19 @@ def option_messages(message):
         bot.send_message(message.chat.id, text=Bot_Response, parse_mode= 'HTML') 
         
 
-if __name__== '__main__':
+@app.route('/' + TOKEN, methods=['POST'])
+def webhook():
+    update = telebot.types.Update.de_json(request.get_data().decode('UTF-8'))
+    bot.process_new_updates([update])
+    return '', 200
+
+@app.route('/')
+def index():
     bot.remove_webhook()
     bot.set_webhook(url='https://bottelegram-2-zmmo.onrender.com/' + TOKEN)
-    
+    return 'ربات فعال است'
+
+if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
+
