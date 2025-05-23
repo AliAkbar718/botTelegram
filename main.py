@@ -42,8 +42,8 @@ def send_welcome(message):
         bot.send_message(
             message.chat.id,
             'سلام، من علی بات 🤖 هستم.\n\n'
-            '✅ شما در کانال عضو هستید و می‌توانید از ربات استفاده کنید.\n'
-            'برای مشاهده قابلیت‌ها، دکمه <b>لیست</b> را بزن یا آن را تایپ کن.',
+            ' شما در کانال عضو هستید و می‌توانید از ربات استفاده کنید✅\n\n'
+            'برای مشاهده قابلیت‌ها، دکمه <b> (لیست) </b> را بزن یا آن را تایپ کن.',
             parse_mode="HTML",
             reply_markup=keyboard
         )
@@ -57,8 +57,8 @@ def send_welcome(message):
         markup.add(join_btn)
         bot.send_message(
             message.chat.id,
-            '❌ شما در کانال عضو نیستید.\n\n'
-            'لطفاً ابتدا در کانال عضو شوید و سپس کلمه <b>لیست</b> را ارسال کنید.',
+            'شما در کانال عضو نیستید❌\n\n'
+            'لطفاً ابتدا در کانال عضو شوید و سپس کلمه <b> (لیست) </b> را ارسال کنید.',
             parse_mode="HTML",
             reply_markup=markup
         )
@@ -66,13 +66,14 @@ def send_welcome(message):
 def is_user_member(user_id):
     try:
         member = bot.get_chat_member(chat_id=f"@{CHANNEL_USERNAME}", user_id=user_id)
-        return member.status in ['member', 'administrator', 'creator']
+        status = member.status
+        if status in ['member', 'administrator', 'creator']:
+            return True
+        else:
+            return False
     except Exception as e:
-        print(f'خطا در بررسی عضویت: {e}')
+        print(f'خطا در بررسی عضویت یا ارتباط با سرور تلگرام: {e}')
         return False
-
-
-
 
 
 
