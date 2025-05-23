@@ -13,7 +13,7 @@ import random
 import pytz
 
 
-TOKEN = "7579645804:AAE6q9t-k3-HKBb0iGkJQmOkX9O4aH_CHaM"
+TOKEN = "7579645804:AAHt5O6hHdXtdigsQQ-WMGiIm7cJexySTVc"
 bot = telebot.TeleBot(TOKEN)
 app = Flask(__name__)
 
