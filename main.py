@@ -28,27 +28,47 @@ def webhook():
 def index():
     return 'ربات فعال است'
 
-CHANNEL_USERNAME = "rap_family1"
 
+CHANNEL_USERNAME = "rap_family1" 
+
+# پیام خوش‌آمد در شروع
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
+    bot.send_message(
+        message.chat.id,
+        'سلام من علی بات🤖 هستم\n\n'
+        'برای اطلاع از قابلیت من، کلمه <b>لیست</b> را ارسال کن.',
+        parse_mode="HTML"
+    )
+
+# چک پیام "لیست"
+@bot.message_handler(func=lambda message: message.text.strip().lower() == 'لیست')
+def send_feature_list(message):
     user_id = message.from_user.id
+
     if is_user_member(user_id):
+        # اگر عضو بود
         bot.send_message(
             message.chat.id,
-            'سلام من علی بات🤖 هستم!\n\n'
-            'شما در کانال عضو هستید و می‌تونید از ربات استفاده کنید.\n'
-            'برای دیدن قابلیت‌ها کلمه <b>(لیست)</b> رو بفرست یا روی /bot بزنید.',
-            parse_mode="HTML"
+            '✅ شما در کانال عضو هستید.\nدر ادامه لیست قابلیت‌های ربات را ببینید:'
+        )
+
+        # لیست قابلیت‌ها
+        bot.send_message(
+            message.chat.id,
+            'لیست قابلیت‌های ربات:\n\n'
+            '- ساخت لوگو\n- تبدیل تاریخ\n- اطلاعات آب و هوا\n- پاسخ هوشمند\n- ...'
         )
     else:
+        # اگر عضو نبود
         bot.send_message(
             message.chat.id,
-            f'برای استفاده از ربات، ابتدا باید در کانال 👈 @{CHANNEL_USERNAME} 👉 عضو شوید.\n\n'
-            'بعد از عضویت دوباره روی /start بزنید.',
+            f'❌ برای استفاده از ربات، ابتدا باید در کانال 👈 <b>@{CHANNEL_USERNAME}</b> 👉 عضو شوید.\n\n'
+            'بعد از عضویت، دوباره کلمه <b>لیست</b> را ارسال کنید.',
             parse_mode="HTML"
         )
 
+# تابع بررسی عضویت
 def is_user_member(user_id):
     try:
         member = bot.get_chat_member(chat_id=f"@{CHANNEL_USERNAME}", user_id=user_id)
