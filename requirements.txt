@@ -1,0 +1,6 @@
+pyTelegramBotAPI
+flask
+gunicorn
+jdatetime
+pytz
+random
