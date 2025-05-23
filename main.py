@@ -29,9 +29,9 @@ def index():
     return 'ربات فعال است'
 
 
-CHANNEL_USERNAME = "rap_family1" 
 
-# پیام خوش‌آمد در شروع
+CHANNEL_USERNAME = "rap_family1"  
+
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
     bot.send_message(
@@ -41,34 +41,41 @@ def send_welcome(message):
         parse_mode="HTML"
     )
 
-# چک پیام "لیست"
 @bot.message_handler(func=lambda message: message.text.strip().lower() == 'لیست')
 def send_feature_list(message):
     user_id = message.from_user.id
 
     if is_user_member(user_id):
-        # اگر عضو بود
+        # عضو است
         bot.send_message(
             message.chat.id,
             '✅ شما در کانال عضو هستید.\nدر ادامه لیست قابلیت‌های ربات را ببینید:'
         )
 
-        # لیست قابلیت‌ها
+        # ارسال لیست
         bot.send_message(
             message.chat.id,
             'لیست قابلیت‌های ربات:\n\n'
             '- ساخت لوگو\n- تبدیل تاریخ\n- اطلاعات آب و هوا\n- پاسخ هوشمند\n- ...'
         )
+
     else:
-        # اگر عضو نبود
+        # عضو نیست → دکمه عضویت
+        markup = InlineKeyboardMarkup()
+        join_btn = InlineKeyboardButton(
+            text="عضویت در کانال",
+            url=f"https://t.me/{CHANNEL_USERNAME}"
+        )
+        markup.add(join_btn)
+
         bot.send_message(
             message.chat.id,
-            f'❌ برای استفاده از ربات، ابتدا باید در کانال 👈 <b>@{CHANNEL_USERNAME}</b> 👉 عضو شوید.\n\n'
+            f'❌ برای استفاده از ربات، ابتدا باید در کانال 👇 عضو شوید.\n\n'
             'بعد از عضویت، دوباره کلمه <b>لیست</b> را ارسال کنید.',
-            parse_mode="HTML"
+            parse_mode="HTML",
+            reply_markup=markup
         )
 
-# تابع بررسی عضویت
 def is_user_member(user_id):
     try:
         member = bot.get_chat_member(chat_id=f"@{CHANNEL_USERNAME}", user_id=user_id)
@@ -76,6 +83,9 @@ def is_user_member(user_id):
     except Exception as e:
         print(f'خطا در بررسی عضویت: {e}')
         return False
+
+
+
     
 weekday_names = {
     'Saturday': 'شنبه',
