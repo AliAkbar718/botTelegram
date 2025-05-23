@@ -30,43 +30,39 @@ def index():
 
 CHANNEL_USERNAME = "rap_family1"  
 
-@bot.message_handler(func=lambda message: message.text.strip().lower() == 'لیست')
-def send_feature_list(message):
+@bot.message_handler(commands=['start'])
+def send_welcome(message):
     user_id = message.from_user.id
     if is_user_member(user_id):
-        # عضو است
-        features = [
-            'ارتباط با ما📞',
-            'مدیریت گروه🤵‍♂️',
-            'بیوگرافی🗨️',
-            'اصطلاحات انگلیسی🔠',
-            'جوک😄',
-            'زبان هخامنشی𐎠',
-            'فونت اسم♍',
-            'جرعت حقیقت❔',
-            'دانستنی⁉️'
-        ]
-        features_text = "لیست قابلیت‌های ربات:\n\n" + "\n".join(f"- {f}" for f in features)
+        # دکمه "لیست"
+        keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
+        list_btn = KeyboardButton("لیست")
+        keyboard.add(list_btn)
+
         bot.send_message(
             message.chat.id,
-            features_text
+            'سلام، من علی بات 🤖 هستم.\n\n'
+            '✅ شما در کانال عضو هستید و می‌توانید از ربات استفاده کنید.\n'
+            'برای مشاهده قابلیت‌ها، دکمه <b>لیست</b> را بزن یا آن را تایپ کن.',
+            parse_mode="HTML",
+            reply_markup=keyboard
         )
     else:
-        # عضو نیست → دکمه عضویت
+        # کاربر عضو نیست → دکمه عضویت
         markup = InlineKeyboardMarkup()
         join_btn = InlineKeyboardButton(
             text="عضویت در کانال",
-            url=f"https://t.me/{CHANNEL_USERNAME}"
+            url=f"@{CHANNEL_USERNAME}"
         )
         markup.add(join_btn)
         bot.send_message(
             message.chat.id,
-            '❌ برای استفاده از ربات، ابتدا باید در کانال 👇 عضو شوید.\n\n'
-            'بعد از عضویت، دوباره کلمه <b>لیست</b> را ارسال کنید.',
+            '❌ شما در کانال عضو نیستید.\n\n'
+            'لطفاً ابتدا در کانال عضو شوید و سپس کلمه <b>لیست</b> را ارسال کنید.',
             parse_mode="HTML",
             reply_markup=markup
         )
-
+        
 def is_user_member(user_id):
     try:
         member = bot.get_chat_member(chat_id=f"@{CHANNEL_USERNAME}", user_id=user_id)
