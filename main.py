@@ -12,11 +12,88 @@ from flask import Flask, request
 import random
 import pytz
 
+
 TOKEN = "7579645804:AAF-Cy5brD6ZJabsLJ4JFlvt-Q5FPssM-yE"
 bot = telebot.TeleBot(TOKEN)
-
 app = Flask(__name__)
 
+CHANNEL_USERNAME = "rap_family1"  
+
+# بررسی عضویت
+def is_user_member(user_id):
+    try:
+        result = bot.get_chat_member(chat_id=f"@{CHANNEL_USERNAME}", user_id=user_id)
+        status = result.status
+        print(f"وضعیت کاربر: {status}")  # برای لاگ
+        return status in ['member', 'administrator', 'creator']
+    except Exception as e:
+        print(f"خطا در بررسی عضویت: {e}")
+        return False
+
+# هندل استارت
+@bot.message_handler(commands=['start'])
+def send_welcome(message):
+    user_id = message.from_user.id
+    if is_user_member(user_id):
+        keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
+        keyboard.add(KeyboardButton("لیست"))
+        bot.send_message(
+            message.chat.id,
+            'سلام، من علی بات 🤖 هستم.\n\n'
+            '✅ شما در کانال عضو هستید و می‌توانید از ربات استفاده کنید.\n\n'
+            'برای مشاهده قابلیت‌ها، دکمه «لیست» را بزن یا تایپ کن.',
+            parse_mode="HTML",
+            reply_markup=keyboard
+        )
+    else:
+        markup = InlineKeyboardMarkup()
+        join_btn = InlineKeyboardButton(
+            text="عضویت در کانال",
+            url=f"https://t.me/{CHANNEL_USERNAME}"
+        )
+        markup.add(join_btn)
+        bot.send_message(
+            message.chat.id,
+            '❌ شما در کانال عضو نیستید.\n\n'
+            'لطفاً ابتدا عضو شوید و سپس کلمه «لیست» را ارسال کنید.',
+            parse_mode="HTML",
+            reply_markup=markup
+        )
+
+# لیست قابلیت‌ها
+@bot.message_handler(func=lambda message: message.text.strip().lower() == 'لیست')
+def send_feature_list(message):
+    user_id = message.from_user.id
+    if is_user_member(user_id):
+        features = [
+            'ارتباط با ما📞',
+            'مدیریت گروه🤵‍♂️',
+            'بیوگرافی🗨️',
+            'اصطلاحات انگلیسی🔠',
+            'جوک😄',
+            'زبان هخامنشی𐎠',
+            'فونت اسم♍',
+            'جرعت حقیقت❔',
+            'دانستنی⁉️'
+        ]
+        features_text = "لیست قابلیت‌های ربات:\n\n" + "\n".join(f"- {f}" for f in features)
+        bot.send_message(message.chat.id, features_text)
+    else:
+        markup = InlineKeyboardMarkup()
+        join_btn = InlineKeyboardButton(
+            text="عضویت در کانال",
+            url=f"https://t.me/{CHANNEL_USERNAME}"
+        )
+        markup.add(join_btn)
+        bot.send_message(
+            message.chat.id,
+            '❌ برای استفاده از ربات، ابتدا باید عضو کانال شوید.\n\n'
+            'بعد از عضویت، کلمه «لیست» را ارسال کنید.',
+            parse_mode="HTML",
+            reply_markup=markup
+        )
+
+# وب‌هوک برای Render
 @app.route('/' + TOKEN, methods=['POST'])
 def webhook():
     json_str = request.get_data().decode('UTF-8')
@@ -27,64 +104,6 @@ def webhook():
 @app.route('/')
 def index():
     return 'ربات فعال است'
-
-CHANNEL_USERNAME = "rap_family1"  
-
-@bot.message_handler(commands=['start'])
-def send_welcome(message):
-    user_id = message.from_user.id
-    if is_user_member(user_id):
-        # دکمه "لیست"
-        keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
-        list_btn = KeyboardButton("لیست")
-        keyboard.add(list_btn)
-
-        bot.send_message(
-            message.chat.id,
-            'سلام، من علی بات 🤖 هستم.\n\n'
-            ' شما در کانال عضو هستید و می‌توانید از ربات استفاده کنید✅\n\n'
-            'برای مشاهده قابلیت‌ها، دکمه <b> (لیست) </b> را بزن یا آن را تایپ کن.',
-            parse_mode="HTML",
-            reply_markup=keyboard
-        )
-    else:
-        # کاربر عضو نیست → دکمه عضویت
-        markup = InlineKeyboardMarkup()
-        join_btn = InlineKeyboardButton(
-            text="عضویت در کانال",
-            url=f"@{CHANNEL_USERNAME}"
-        )
-        markup.add(join_btn)
-        bot.send_message(
-            message.chat.id,
-            'شما در کانال عضو نیستید❌\n\n'
-            'لطفاً ابتدا در کانال عضو شوید و سپس کلمه <b> (لیست) </b> را ارسال کنید.',
-            parse_mode="HTML",
-            reply_markup=markup
-        )
-        
-def is_user_member(user_id):
-    try:
-        member = bot.get_chat_member(chat_id=f"@{CHANNEL_USERNAME}", user_id=user_id)
-        status = member.status
-        if status in ['member', 'administrator', 'creator']:
-            return True
-        else:
-            return False
-    except Exception as e:
-        print(f'خطا در بررسی عضویت یا ارتباط با سرور تلگرام: {e}')
-        return False
-
-
-def is_user_member(user_id):
-    try:
-        result = bot.get_chat_member(chat_id=f"@{CHANNEL_USERNAME}", user_id=user_id)
-        status = result.status
-        print(f"وضعیت کاربر: {status}")  # جهت تست
-        return status in ['member', 'administrator', 'creator']
-    except Exception as e:
-        print(f"خطا در بررسی عضویت: {e}")
-        return False
 
 
     
@@ -592,7 +611,8 @@ def option_messages(message):
         bot.send_message(message.chat.id, text=Bot_Response, parse_mode= 'HTML') 
         
 
-if __name__ == 'main':
+if __name__== '__main__':
     bot.remove_webhook()
+    
     bot.set_webhook(url='https://bottelegram-2-zmmo.onrender.com/' + TOKEN)
     app.run(host='0.0.0.0', port=5000)
