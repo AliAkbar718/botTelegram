@@ -594,4 +594,6 @@ def option_messages(message):
         bot.send_message(message.chat.id, text=Bot_Response, parse_mode= 'HTML') 
         
 
-
+if __name__ == "__main__":
+    bot.remove_webhook()
+    bot.set_webhook(url="https://bottelegram-3-evsk.onrender.com/" + TOKEN)
