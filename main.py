@@ -8,16 +8,15 @@ import platform
 from datetime import datetime
 import jdatetime
 import os
-from flask import Flask, request
+from flask import Flask, request,Response
 import random
 import pytz
 
 
 TOKEN = "7579645804:AAF-Cy5brD6ZJabsLJ4JFlvt-Q5FPssM-yE"
 bot = telebot.TeleBot(TOKEN)
-app = Flask(__name__)
-
-CHANNEL_USERNAME = "rap_family1"  
+CHANNEL_USERNAME = "rap_family1" 
+app = Flask(__name__) 
 
 # بررسی عضویت
 def is_user_member(user_id):
@@ -602,16 +601,18 @@ def option_messages(message):
 
 @app.route('/' + TOKEN, methods=['POST'])
 def webhook():
-    update = telebot.types.Update.de_json(request.get_data().decode('UTF-8'))
+    json_str = request.get_data().decode('UTF-8')
+    update = telebot.types.Update.de_json(json_str)
     bot.process_new_updates([update])
     return '', 200
 
 @app.route('/')
 def index():
+    return "ربات فعال است", 200
+
+if __name__ == '__main__':
     bot.remove_webhook()
     bot.set_webhook(url='https://bottelegram-2-zmmo.onrender.com/' + TOKEN)
-    
-if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
 
