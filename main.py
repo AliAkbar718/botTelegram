@@ -597,7 +597,7 @@ def option_messages(message):
     elif message.text == 'روبات':
         Bot_Response = f'جان @{message.from_user.username} مه ره کار داشتی؟\n\n🔸 برای گپ بزوعن با ربات کلمه <b>(شروع)</b>  ره راهی هاکان\n\n🔺و برای اطلاع داشتن از تاریخ و ساعت امروز کلمه<b> (زمان) </b>ره راهی هاکان'
         bot.send_message(message.chat.id, text=Bot_Response, parse_mode= 'HTML') 
-        
+        print('git')
 
 if __name__ == 'main':
     bot.remove_webhook()
