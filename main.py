@@ -30,33 +30,27 @@ def index():
 
 CHANNEL_USERNAME = "rap_family1"  
 
-@bot.message_handler(commands=['start'])
-def send_welcome(message):
-    bot.send_message(
-        message.chat.id,
-        'سلام من علی بات🤖 هستم\n\n'
-        'برای اطلاع از قابلیت من، کلمه <b>لیست</b> را ارسال کن.',
-        parse_mode="HTML"
-    )
-
 @bot.message_handler(func=lambda message: message.text.strip().lower() == 'لیست')
 def send_feature_list(message):
     user_id = message.from_user.id
-
     if is_user_member(user_id):
         # عضو است
+        features = [
+            'ارتباط با ما📞',
+            'مدیریت گروه🤵‍♂️',
+            'بیوگرافی🗨️',
+            'اصطلاحات انگلیسی🔠',
+            'جوک😄',
+            'زبان هخامنشی𐎠',
+            'فونت اسم♍',
+            'جرعت حقیقت❔',
+            'دانستنی⁉️'
+        ]
+        features_text = "لیست قابلیت‌های ربات:\n\n" + "\n".join(f"- {f}" for f in features)
         bot.send_message(
             message.chat.id,
-            '✅ شما در کانال عضو هستید.\nدر ادامه لیست قابلیت‌های ربات را ببینید:'
+            features_text
         )
-
-        # ارسال لیست
-        bot.send_message(
-            message.chat.id,
-            'لیست قابلیت‌های ربات:\n\n'
-            '- ساخت لوگو\n- تبدیل تاریخ\n- اطلاعات آب و هوا\n- پاسخ هوشمند\n- ...'
-        )
-
     else:
         # عضو نیست → دکمه عضویت
         markup = InlineKeyboardMarkup()
@@ -65,10 +59,9 @@ def send_feature_list(message):
             url=f"https://t.me/{CHANNEL_USERNAME}"
         )
         markup.add(join_btn)
-
         bot.send_message(
             message.chat.id,
-            f'❌ برای استفاده از ربات، ابتدا باید در کانال 👇 عضو شوید.\n\n'
+            '❌ برای استفاده از ربات، ابتدا باید در کانال 👇 عضو شوید.\n\n'
             'بعد از عضویت، دوباره کلمه <b>لیست</b> را ارسال کنید.',
             parse_mode="HTML",
             reply_markup=markup
