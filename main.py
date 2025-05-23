@@ -75,18 +75,14 @@ def send_features(message):
             reply_markup=markup
         )
 
-@app.route(f"/{TOKEN}", methods=["POST"])
+@app.route('/' + TOKEN, methods=['POST'])
 def webhook():
-    update = telebot.types.Update.de_json(request.data.decode("utf-8"))
+    json_str = request.get_data().decode('UTF-8')
+    update = telebot.types.Update.de_json(json_str)
     bot.process_new_updates([update])
     return '', 200
 
-@app.route("/")
-def index():
-    return "ربات فعال است"
 
-# تنظیم وب‌هوک فقط یک‌بار دستی انجام بده یا با curl:
-# https://api.telegram.org/bot<توکن>/setWebhook?url=https://your-app.onrender.com/<توکن>
 
 
     
@@ -595,5 +591,7 @@ def option_messages(message):
         
 
 if __name__ == "__main__":
-    bot.remove_webhook()
-    bot.set_webhook(url="https://bottelegram-3-evsk.onrender.com/" + TOKEN)
+     bot.remove_webhook()
+     bot.set_webhook(url="https://bottelegram-3-evsk.onrender.com/" + TOKEN)
+     port = int(os.environ.get("PORT", 5000))
+     app.run(host="0.0.0.0", port=port)
