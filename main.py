@@ -82,7 +82,9 @@ def webhook():
     bot.process_new_updates([update])
     return '', 200
 
-
+@app.route('/')
+def index():
+    return 'ربات فعال است'
 
 
     
