@@ -28,9 +28,34 @@ def webhook():
 def index():
     return 'ربات فعال است'
 
+CHANNEL_USERNAME = "rap_family1"
+
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
-    bot.reply_to(message, 'سلام من علی بات🤖هستم\n\n برای اطلاع از قابلیت من کلمه <b>(لیست)</b> رو ارسال کن', parse_mode="HTML")
+    user_id = message.from_user.id
+    if is_user_member(user_id):
+        bot.send_message(
+            message.chat.id,
+            'سلام من علی بات🤖 هستم!\n\n'
+            'شما در کانال عضو هستید و می‌تونید از ربات استفاده کنید.\n'
+            'برای دیدن قابلیت‌ها کلمه <b>(لیست)</b> رو بفرست یا روی /bot بزنید.',
+            parse_mode="HTML"
+        )
+    else:
+        bot.send_message(
+            message.chat.id,
+            f'برای استفاده از ربات، ابتدا باید در کانال 👈 @{CHANNEL_USERNAME} 👉 عضو شوید.\n\n'
+            'بعد از عضویت دوباره روی /start بزنید.',
+            parse_mode="HTML"
+        )
+
+def is_user_member(user_id):
+    try:
+        member = bot.get_chat_member(chat_id=f"@{CHANNEL_USERNAME}", user_id=user_id)
+        return member.status in ['member', 'administrator', 'creator']
+    except Exception as e:
+        print(f'خطا در بررسی عضویت: {e}')
+        return False
     
 weekday_names = {
     'Saturday': 'شنبه',
@@ -132,25 +157,6 @@ def handle_photo(message):
 def handle_photo(message):
     if message.video:
         bot.reply_to(message, 'این یک ویدیو📽️ هست')
-
-
-@bot.message_handler(commands=['bot'])
-def send_welcome(message):
-   user_id = message.from_user.id
-   if is_user_member(user_id):
-      bot.send_message(message.chat.id, ' \nبه ربات علی بات🤖 خوش آمدید✨❤️\n  شما میتوانید از ربات استفاده کنید \n\n برای اینکه به قابلیت های ربات دسترسی پیدا کنید\n\n روی دکمه /bot بزنید ')
-   else:
-      bot.send_message(message.chat.id, f'شما باید در کانال 👈 @{CHANNEL_USERNAME} 👉 \n عضو شوید\n\n تا بتوانید از ربات استفاده کنید بعد از عضو شدن در کانال مجددا روی دکمه /start بزنید')
-
-
-def is_user_member(user_id):
-   try:
-      member = bot.get_chat_member(chat_id=f"@{CHANNEL_USERNAME}", user_id=user_id)
-      if member.status in ['member', 'administrator', 'creator']:
-         return True
-   except Exception as e:
-      print(f'Error: {e}')
-   return False
 
 
 
@@ -553,7 +559,7 @@ def option_messages(message):
     elif message.text == 'روبات':
         Bot_Response = f'جان @{message.from_user.username} مه ره کار داشتی؟\n\n🔸 برای گپ بزوعن با ربات کلمه <b>(شروع)</b>  ره راهی هاکان\n\n🔺و برای اطلاع داشتن از تاریخ و ساعت امروز کلمه<b> (زمان) </b>ره راهی هاکان'
         bot.send_message(message.chat.id, text=Bot_Response, parse_mode= 'HTML') 
-        print('telegrambot')   
+        print("ربات تلگرام")  
 
 if __name__ == 'main':
     bot.remove_webhook()
