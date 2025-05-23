@@ -76,6 +76,16 @@ def is_user_member(user_id):
         return False
 
 
+def is_user_member(user_id):
+    try:
+        result = bot.get_chat_member(chat_id=f"@{CHANNEL_USERNAME}", user_id=user_id)
+        status = result.status
+        print(f"وضعیت کاربر: {status}")  # جهت تست
+        return status in ['member', 'administrator', 'creator']
+    except Exception as e:
+        print(f"خطا در بررسی عضویت: {e}")
+        return False
+
 
     
 weekday_names = {
