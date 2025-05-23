@@ -8,7 +8,7 @@ import platform
 from datetime import datetime
 import jdatetime
 import os
-from flask import Flask, request,Response
+from flask import Flask, request
 import random
 import pytz
 
