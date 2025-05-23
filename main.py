@@ -610,8 +610,7 @@ def webhook():
 def index():
     bot.remove_webhook()
     bot.set_webhook(url='https://bottelegram-2-zmmo.onrender.com/' + TOKEN)
-    return 'ربات فعال است'
-
+    
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
